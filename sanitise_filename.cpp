@@ -79,15 +79,40 @@ int main(int argc, char** argv)
     filename = boost::regex_replace(filename, ampersand, "_and_");
     // trailing underscores
     filename = boost::regex_replace(filename, boost::regex {"_+$"}, "");
+
     // remove chars
     for (auto& c : filename)
         if (disallowed_chars_post.contains(c))
             c = '_';
+
     filename = boost::regex_replace(filename, underscores, "_");
 
     // remove prefix underscore unless it was part of the original input
     if (!starts_with_underscore && filename[0] == '_' && filename.size() > 1)
         filename = filename.substr(1,filename.size());
+
+    // capitalisation
+
+    auto fb { filename.cbegin() };
+    auto fe { filename.cend() };
+    boost::match_results<std::string::const_iterator> match;
+    boost::regex word_start ("(?<=_)(?!((as|of|and|at|in|on|the|which|or|nor|so|yet|up|per|via|for|are|with|it|by|to|from|that|is)_))([a-z])");
+
+    std::string temp {};
+    while (boost::regex_search(fb, fe, match, word_start)) {
+        temp.append(fb, match[0].first);
+        temp += std::toupper(match[0].str()[0]);
+        fb = match[0].second;
+    }
+    temp.append(fb, fe);
+    filename = temp;
+
+    boost::regex_search(filename.cbegin(), filename.cend(), match, boost::regex {"^_([a-z])"});
+    auto target = std::distance(filename.cbegin(), match[1].first);
+    filename[target] = toupper(filename[target]);
+    filename[0] = toupper(filename[0]);
+
+
     if (!no_ext)
         filename += '.' +  extension;
     fmt::print("{:s}\n", fmt::join(filepath_split, "/"));
