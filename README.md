@@ -8,4 +8,5 @@ For keeping files consistently named.
 - Others just remove characters altogether, e.g. `filename_.ext` becomes `filename.ext`.
 - Extensions and the dirname are not modified so you can safely do `mv -u file $(sanitise_filename file)` for renaming.
 - This is a port from an original perl script and is currently a minimal working example.
+- Relies on the boost regex library and makes use of modern C++23 features
 
