@@ -37,6 +37,29 @@ int main(int argc, char** argv)
         extension = filename.substr(ext_pos+1, filename.size() -1);
     // remove file extension from the filename
     filename = filename.substr(0, ext_pos);
+    // any of these chars will be removed without checking to see if they are
+    // needed to match later regexes
+    static std::unordered_set<wchar_t> disallowed_chars_pre
+    {
+        '`','\'', L'‘', L'’', L'‛', L'‚',
+        '~', '!', '"', '$', '%', '^', '*', '(', ')', '-', '=', ']', '[',
+        '}', '.', '{', '\'', '\'', '~', '\'', '@', ';', ':', '/', '\\',
+        ' ', L'£', L'¬'
+    };
+
+    // these disallowed chars are removed after the other regexes
+    // only chars that are needed for regex patterns above should live here
+    static std::unordered_set<wchar_t> disallowed_chars_post
+    { '&', '#', '+' };
+
+    // remove chars
+    for (auto& c : filename)
+        if (disallowed_chars_pre.contains(c))
+            c = '_';
+    // remove chars
+    for (auto& c : filename)
+        if (disallowed_chars_post.contains(c))
+            c = '_';
     if (!no_ext)
         filename += '.' +  extension;
     fmt::print("{:s}\n", fmt::join(filepath_split, "/"));
