@@ -12,6 +12,7 @@ int main(int argc, char** argv)
     }
     std::string filepath { argv[1] };
     bool no_ext {false};
+
     // split filepath into chunks for each dir
     std::vector<std::string> filepath_split {};
     auto left { filepath.begin() };
@@ -37,6 +38,11 @@ int main(int argc, char** argv)
         extension = filename.substr(ext_pos+1, filename.size() -1);
     // remove file extension from the filename
     filename = filename.substr(0, ext_pos);
+
+    // check if the filename already starts with an underscore
+    // if it does, we will restore it later
+    bool starts_with_underscore { filename[0] == '_' };
+
     // any of these chars will be removed without checking to see if they are
     // needed to match later regexes
     static std::unordered_set<wchar_t> disallowed_chars_pre
@@ -79,6 +85,9 @@ int main(int argc, char** argv)
             c = '_';
     filename = boost::regex_replace(filename, underscores, "_");
 
+    // remove prefix underscore unless it was part of the original input
+    if (!starts_with_underscore && filename[0] == '_' && filename.size() > 1)
+        filename = filename.substr(1,filename.size());
     if (!no_ext)
         filename += '.' +  extension;
     fmt::print("{:s}\n", fmt::join(filepath_split, "/"));
