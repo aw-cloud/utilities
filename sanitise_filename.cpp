@@ -56,10 +56,29 @@ int main(int argc, char** argv)
     for (auto& c : filename)
         if (disallowed_chars_pre.contains(c))
             c = '_';
+
+    boost::regex ascii_only ("[^\\x20-\\x7E]");
+    boost::regex underscores ("_+");
+
+    filename = boost::regex_replace(filename, ascii_only, "_");
+    filename = boost::regex_replace(filename, underscores, "_");
+
+    boost::regex cpp { "[c,C]\\+\\+" };
+    filename = boost::regex_replace(filename, cpp, "CPP");
+
+    boost::regex c_sharp { "[c,C]#" };
+    filename = boost::regex_replace(filename, c_sharp, "C_Sharp");
+
+    boost::regex ampersand { "&" };
+    filename = boost::regex_replace(filename, ampersand, "_and_");
+    // trailing underscores
+    filename = boost::regex_replace(filename, boost::regex {"_+$"}, "");
     // remove chars
     for (auto& c : filename)
         if (disallowed_chars_post.contains(c))
             c = '_';
+    filename = boost::regex_replace(filename, underscores, "_");
+
     if (!no_ext)
         filename += '.' +  extension;
     fmt::print("{:s}\n", fmt::join(filepath_split, "/"));
