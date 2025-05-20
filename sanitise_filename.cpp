@@ -10,6 +10,9 @@ std::string usage(char** argv)
 
 int main(int argc, char** argv)
 {
+    bool NO_EXT { false };
+    bool KEEP_CASE { false };
+
     if (argc < 2) {
         std::cerr << "no filename provided\n";
         std::cerr << usage(argv);
@@ -27,6 +30,32 @@ int main(int argc, char** argv)
     while ((right = std::find(left, it_end, '/')) != it_end) {
         filepath_split.push_back({left, right});
         left = right + 1;
+    }
+
+    // process args for flags and options
+        for (int arg = 0; arg != argc; ++arg) {
+            std::string arg_s { argv[arg] };
+            // an argument of "--" stops further scanning for arguments
+            if (arg_s == "--") {
+                break;
+            }
+            // skip input that isn't a flag or option
+            if (!arg_s.starts_with("-"))
+                    continue;
+            else {
+                // trim arg until string is consumed or error occurs
+                // allows for combined flags like -nk
+                while ((arg_s = arg_s.substr(1,arg_s.size())) != "") {
+                    if (arg_s.starts_with("n")) {
+                        NO_EXT = true;
+                        continue;
+                    }
+                    if (arg_s.starts_with("k")) {
+                        KEEP_CASE = true;
+                        continue;
+                    }
+                }
+            }
     }
     filepath_split.push_back({left, right});
 
