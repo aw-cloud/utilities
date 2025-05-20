@@ -1,4 +1,4 @@
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <fmt/ranges.h>
 #include <iostream>
 #include <boost/regex.hpp>
