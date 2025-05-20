@@ -44,7 +44,7 @@ inline std::pair<std::string, std::string> extract_extension(std::string filenam
     // extract the file extension
     auto ext_pos { filename.rfind(sep, filename.size()-1) };
     if (ext_pos == std::string::npos)
-        sep = "";
+        extension = "";
     else
         extension = filename.substr(ext_pos+1, filename.size() -1);
     // remove file extension from the filename
@@ -75,7 +75,7 @@ inline std::string capitalise(std::string filename)
     return filename;
 }
 
-inline void sanitise_filename(std::string& filepath, const bool NO_EXT, const bool KEEP_CASE)
+inline void sanitise_filename(std::string& filepath, bool NO_EXT, const bool KEEP_CASE)
     {
         // split filepath into chunks for each dir
         auto split_filepath = split_path(filepath, '/');
@@ -90,6 +90,8 @@ inline void sanitise_filename(std::string& filepath, const bool NO_EXT, const bo
             auto split = extract_extension(filename, ext_sep);
             filename = split.first;
             extension = split.second;
+            if (extension == "")
+                ext_sep = "";
         }
 
         // check if the filename already starts with an underscore
