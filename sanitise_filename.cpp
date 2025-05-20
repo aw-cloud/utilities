@@ -3,6 +3,7 @@
 #include <iostream>
 #include <boost/regex.hpp>
 #include <unordered_set>
+#include <string>
 
 int main(int argc, char** argv)
 {
