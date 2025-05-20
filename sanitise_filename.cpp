@@ -5,10 +5,14 @@
 #include <unordered_set>
 #include <string>
 
+std::string usage(char** argv)
+{ return std::format("usage: {} [-n|-k] <filepath> [filepath2 ... ]\n", argv[0]); }
+
 int main(int argc, char** argv)
 {
     if (argc < 2) {
         std::cerr << "no filename provided\n";
+        std::cerr << usage(argv);
         return EXIT_FAILURE;
     }
     std::string filepath { argv[1] };
