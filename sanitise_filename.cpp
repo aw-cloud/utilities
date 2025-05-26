@@ -157,10 +157,20 @@ inline void process_args(int argc, char** argv, std::set<int>& skip_args,
         // trim arg until string is consumed or error occurs
         // allows for combined flags like -nk
         while ((arg_s = arg_s.substr(1,arg_s.size())) != "") {
+            if (arg_s == "-noext" ) {
+                NO_EXT = true;
+                skip_args.insert(arg);
+                break;
+            }
             if (arg_s.starts_with("n")) {
                 NO_EXT = true;
                 skip_args.insert(arg);
                 continue;
+            }
+            if (arg_s == "-keepcase" ) {
+                KEEP_CASE = true;
+                skip_args.insert(arg);
+                break;
             }
             if (arg_s.starts_with("k")) {
                 KEEP_CASE = true;
