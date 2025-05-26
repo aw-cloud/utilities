@@ -28,7 +28,7 @@ inline std::vector<std::string> split_path(std::string filepath, char sep)
     std::vector<std::string> split_filepath {};
     auto left { filepath.begin() };
     auto it_end { filepath.end() };
-    auto right = it_end;
+    auto right { it_end };
 
     while ((right = std::find(left, it_end, sep)) != it_end) {
         split_filepath.push_back({left, right});
@@ -57,7 +57,7 @@ inline std::string capitalise(std::string filename)
     auto fb { filename.cbegin() };
     auto fe { filename.cend() };
     boost::match_results<std::string::const_iterator> match;
-    static const boost::regex word_start ("(?<=_)(?!((as|of|and|at|in|on|the|which|or|nor|so|yet|up|per|via|for|are|with|it|by|to|from|that|is)_))([a-z])");
+    static const boost::regex word_start { "(?<=_)(?!((as|of|and|at|in|on|the|which|or|nor|so|yet|up|per|via|for|are|with|it|by|to|from|that|is)_))([a-z])" };
 
     std::string temp {};
     while (boost::regex_search(fb, fe, match, word_start)) {
@@ -69,7 +69,7 @@ inline std::string capitalise(std::string filename)
     filename = temp;
 
     boost::regex_search(filename.cbegin(), filename.cend(), match, boost::regex {"^_([a-z])"});
-    auto target = std::distance(filename.cbegin(), match[1].first);
+    auto target { std::distance(filename.cbegin(), match[1].first) };
     filename[target] = toupper(filename[target]);
     filename[0] = toupper(filename[0]);
     return filename;
@@ -78,7 +78,7 @@ inline std::string capitalise(std::string filename)
 inline void sanitise_filename(std::string& filepath, bool NO_EXT, const bool KEEP_CASE)
     {
         // split filepath into chunks for each dir
-        auto split_filepath = split_path(filepath, '/');
+        auto split_filepath { split_path(filepath, '/') };
 
         // choose the last chunk as the filename
         std::string& filename {*(split_filepath.end()-1)};
@@ -87,7 +87,7 @@ inline void sanitise_filename(std::string& filepath, bool NO_EXT, const bool KEE
         std::string ext_sep {};
         if (!NO_EXT) {
             ext_sep = '.';
-            auto split = extract_extension(filename, ext_sep);
+            auto split { extract_extension(filename, ext_sep) };
             filename = split.first;
             extension = split.second;
             if (extension == "")
@@ -103,8 +103,8 @@ inline void sanitise_filename(std::string& filepath, bool NO_EXT, const bool KEE
             if (disallowed_chars_pre.contains(c))
                 c = '_';
 
-    static const boost::regex ascii_only ("[^\\x20-\\x7E]");
-    static const boost::regex underscores ("_+");
+    static const boost::regex ascii_only { "[^\\x20-\\x7E]" };
+    static const boost::regex underscores { "_+" };
 
     filename = boost::regex_replace(filename, ascii_only, "_");
     filename = boost::regex_replace(filename, underscores, "_");
@@ -142,9 +142,9 @@ inline void sanitise_filename(std::string& filepath, bool NO_EXT, const bool KEE
 }
 
 inline void process_args(int argc, char** argv, std::set<int>& skip_args,
-        bool& NO_EXT, bool& KEEP_CASE)
+        bool& NO_EXT, bool& KEEP_CASE, bool& read_from_stdin, bool& stop_arg_processing)
 {
-    for (int arg = 1; arg != argc; ++arg) {
+    for (int arg { 1 }; arg != argc; ++arg) {
         std::string arg_s { argv[arg] };
         // an argument of "--" stops further scanning for arguments
         if (arg_s == "--") {
@@ -200,7 +200,7 @@ int main(int argc, char** argv)
     }
 
     std::vector<std::string> filepaths {};
-    for (int arg = 1; arg != argc; ++arg)
+    for (int arg { 1 }; arg != argc; ++arg)
         if (!skip_args.contains(arg))
             filepaths.push_back(argv[arg]);
 
