@@ -21,7 +21,15 @@ static const std::unordered_set<wchar_t> disallowed_chars_post
 { '&', '#', '+' };
 
 inline std::string usage(char** argv)
-{ return std::format("usage: {} [-n|-k] <filepath> [filepath2 ... ]\n", argv[0]); }
+{
+    return std::format("Usage: {} [-n|-k] <filepath> [filepath2 ... ]\n"
+    "Removes special chars from input and outputs a Capitalised_Snake_Case filepath to STDOUT\n"
+    "\n"
+    "With no filepaths and the '-' or '--' option, read from STDIN\n"
+    "-n|--noext\t - don't preserve extension\n"
+    "-k|--keepcase\t - don't capitalise output\n"
+    ,argv[0]);
+}
 
 inline std::vector<std::string> split_path(std::string filepath, char sep)
 {
@@ -149,7 +157,13 @@ inline void process_args(int argc, char** argv, std::set<int>& skip_args,
         // an argument of "--" stops further scanning for arguments
         if (arg_s == "--") {
             skip_args.insert(arg);
+            stop_arg_processing = true;
             break;
+        }
+        if (arg_s == "-") {
+            read_from_stdin = true;
+            skip_args.insert(arg);
+            continue;
         }
         // skip input that isn't a flag or option
         if (!arg_s.starts_with("-"))
@@ -192,27 +206,48 @@ int main(int argc, char** argv)
 
     bool NO_EXT { false };
     bool KEEP_CASE { false };
+    bool read_from_stdin { false };
+    bool stop_arg_processing { false };
 
     // process args for flags and options
     // indices of args are stored so they aren't processed as input later
     std::set<int> skip_args { 0 };
     try {
-        process_args(argc, argv, skip_args, NO_EXT, KEEP_CASE);
+        process_args(argc, argv, skip_args, NO_EXT, KEEP_CASE,
+                read_from_stdin, stop_arg_processing);
     }
     catch (std::runtime_error& e) {
         std::cerr << e.what() << '\n';
-        static const std::string tip { "try passing \"--\" as the first\
-            argument to avoid accidentally\
-            treating input as a flag or option\n"
+        static const std::string tip { "pass \"-\" or \"--\" as the first "
+            "argument to process input starting with a \"-\"\n"
         };
         std::cerr << tip;
         return EXIT_FAILURE;
     }
 
     std::vector<std::string> filepaths {};
+
+    // read from argv
     for (int arg { 1 }; arg != argc; ++arg)
         if (!skip_args.contains(arg))
             filepaths.push_back(argv[arg]);
+
+    if (!read_from_stdin && filepaths.size() == 0) {
+        if (stop_arg_processing)
+            read_from_stdin = true;
+        else {
+            std::cerr << "no filename provided\n";
+            std::cerr << usage(argv);
+            return EXIT_FAILURE;
+        }
+    }
+
+    // read from stdin
+    if (read_from_stdin) {
+        std::string s {};
+        while (getline(std::cin, s, '\n'))
+            filepaths.push_back(s);
+    }
 
     for (auto filepath : filepaths)
         sanitise_filename(filepath, NO_EXT, KEEP_CASE);
