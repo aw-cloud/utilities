@@ -6,7 +6,7 @@ For keeping files consistently named.
 - Replaces special characters, non-printing characters, whitespace etc. and produces a Capitalised_Snake_Case filename.
 - Some replacements are designed to show what was replaced, e.g. `&` becomes `_and_` for readability.
 - Others just remove characters altogether, e.g. `filename_.ext` becomes `filename.ext`.
-- Extensions and the dirname are not modified so you can safely do `mv -u file $(sanitise_filename file)` for renaming.
+- Extensions and the dirname are not modified (by default) so you can safely do `mv -u file $(sanitise_filename file)` for renaming.
 - Relies on the boost regex library and makes use of modern C++23 features
 
 ## Mvsan
