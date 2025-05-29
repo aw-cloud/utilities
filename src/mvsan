@@ -1,0 +1,48 @@
+#! /bin/bash
+KEEPCASE=false
+POSITIONAL_ARGS=()
+while [[ $# -gt 0 ]]; do
+	case $1 in
+		-k|--keepcase)
+			KEEPCASE=true
+			shift # past argument
+			;;
+		-*|--*)
+			echo "Unknown option $1"
+			exit 1
+			;;
+		*)
+			POSITIONAL_ARGS+=("$1") # save positional arg
+			shift # past argument
+			;;
+	esac
+done
+set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
+
+if [[ "$KEEPCASE" == "true" ]]
+then
+	for file
+	do
+		filetype="$(file "$file"|awk '{print $NF}')"
+		if [[ "$filetype" == "directory" ]] then
+			mv -n "$file" "$(sanitise_filename -nk "$file")"
+		else
+			mv -n "$file" "$(sanitise_filename -k "$file")"
+		fi
+	done
+	exit 0
+fi
+if [[ "$KEEPCASE" == "false" ]]
+then
+	for file
+	do
+		filetype="$(file "$file"|awk '{print $NF}')"
+		if [[ "$filetype" == "directory" ]] then
+			mv -n "$file" "$(sanitise_filename -n "$file")"
+		else
+			mv -n "$file" "$(sanitise_filename "$file")"
+		fi
+	done
+	exit 0
+fi
+

@@ -1,0 +1,18 @@
+test of a filename with spaces.pdf
+Test_of_A_Filename_with_Spaces.pdf
+test.of.a.file.with.dots.ext
+Test_of_A_File_with_Dots.ext
+sp&c|ĕåL_ÇĤaractεrς.file
+Sp_and_C_L_Aract_R.file
+CaPiTaL LeTTeRs .TEST
+CaPiTaL_LeTTeRs.TEST
+_prefix.underscore.epub
+_Prefix_Underscore.epub
+repeated___underscores.filename
+Repeated_Underscores.filename
+  spaces & substitutions.extension
+Spaces_and_Substitutions.extension
+c++ & c# replacement
+CPP_and_C_Sharp_Replacement
+`¬1!2"3£4$5%6^
+1_2_3_4_5_6
